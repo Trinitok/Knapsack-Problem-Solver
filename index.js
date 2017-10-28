@@ -2,6 +2,7 @@
 $(document).ready(function() {
     var index = 0;
 
+    // the object all data from the rows will be stored in
     function Node(name, profit, weight) {
         this.name = name;
         this.profit = profit;
@@ -30,6 +31,8 @@ $(document).ready(function() {
     $("#gobutton").click(function() { //  compute the fractional knapsack
         var table = document.getElementById("item-table");
         var capacity = Number($('#capacity').val());
+
+        //  get the data from each row and store it in a node
         for (var row, i = 0; row = table.rows[i]; i++) {
             //iterate through rows
             //rows would be accessed using the "row" variable assigned in the for loop
@@ -41,18 +44,22 @@ $(document).ready(function() {
             var ratio = Number(profit.val()) / Number(weight.val());
             console.log(ratio);
             var node = new Node(name.val(), profit.val(), weight.val());
+            //  if the ratio is not a number, then push the node to the storage array
             if (!isNaN(ratio)) {
                 arr.push(node);
             }
         }
         console.log(arr);
+        //  sort the array using the custom built quicksort function below
         arr = sort(arr);
         console.log(arr);
+
+        //  add items to the knapsack recursively
         addItem(arr, capacity);
         
         
 
-
+        //  display the final knapsack container as well as the final profit.  then reset the knapsack and profit
         alert('Your final knapsack contains: ' + finalknapsack +'\nYour final profit is: ' + finalweight);
         console.log(finalknapsack);
         console.log(finalweight);
@@ -60,6 +67,7 @@ $(document).ready(function() {
         finalweight = 0;
     });
 
+    //  facade for quicksort
     function sort(array) {
         return quickSort(array, 0, array.length - 1);
     }
@@ -102,11 +110,16 @@ $(document).ready(function() {
         arr[i] = arr[j];
         arr[j] = temp;
     }
+
+    //  add items to the final knapsack and final profit
     var finalknapsack = [];
     var finalweight = 0;
     function addItem(array, capacity) {
         
+        //  first take off the first item in the array
         var node = array.shift();
+
+        //  if this item is beyond the capacity of our knapsack
         if (capacity - node.weight < 0) {
             
             var ratio = capacity / node.weight;
@@ -115,12 +128,13 @@ $(document).ready(function() {
             finalweight = Number(finalweight) + parseFloat(ratio) * Number(node.profit);
             return;
         }
-        else{
+        else{  // if we can safely add the item to our knapsack
         	capacity = capacity - node.weight;
             finalknapsack.push(node.name);
             finalweight += Number(node.profit);
         }
 
+        //  recursively go through and add more items if there is still both capacity and items to add
         if(capacity > 0 && array.length >= 1){
         	console.log('cap: ' + capacity);
             console.log('arr len ' + array.length);
